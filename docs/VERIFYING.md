@@ -65,7 +65,7 @@ if ($LASTEXITCODE -ne 0) { throw "20-second reproduction failed" }
 
 ## 包完整性与复现
 
-`docs/RUNTIME_IDENTITY.json` 记录 0.4.1 已验收核心文件摘要。公开整理只调整发布工具、示例和文档，未改这些核心文件。
+`docs/RUNTIME_IDENTITY.json` 记录 0.4.1 已验收核心文件摘要。公开整理只调整发布工具、示例和文档，核心实现内容不变，文本换行按仓库规则统一为 LF；semantic_worker.py 字节和实现摘要保持不变。
 
 生成发行资产：
 

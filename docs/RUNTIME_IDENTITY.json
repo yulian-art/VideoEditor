@@ -1,23 +1,23 @@
 {
   "version": "0.4.1",
   "files_sha256": {
-    "alignstudio/__init__.py": "d3be62cffc262561593a21dbba29cd332cf55891e8eeda7437cd7bb708f14244",
-    "alignstudio/alignment.py": "ac45279c86af8327dd50ae8e0dd9c9ff68dc7f063a2185c4b787553c94bc59f1",
+    "alignstudio/__init__.py": "a4cb53992521b7e5ed6d1ffb0e8cfa6ec42aa2924977cad9f08f33cb61f0c280",
+    "alignstudio/alignment.py": "e6a9c912910a45821b37d2a2d80bfebc3f6c7a8e9c4c9c67a68fb9ee449ca96d",
     "alignstudio/analysis_worker.py": "695c2131740e842f6fa69537a42b60d953cb6b5c868dfb493ef377abc8c4c071",
-    "alignstudio/analyzer.py": "43655adecc1f8bc5208453c77506040f996f0df93943f1660c7234c1d29f4466",
+    "alignstudio/analyzer.py": "a1e6a55397b394ac6e882fe3d30e77ca9e37b28bbda103ff49a55bfb08e2d141",
     "alignstudio/asr_worker.py": "4618afb587177f1af0c86dd3f5ddb91794a2216c65a8a9b2d760027ad970caf9",
-    "alignstudio/dialog_helper.py": "e93558c413374b7dec019445f2fab6770dfa34f1c5590f255816699ed0025e09",
-    "alignstudio/editing.py": "a07da5ccca465900471671357c716e6e13cd3fc5d1fca239ee8ddde6940805ab",
-    "alignstudio/exporter.py": "ec2483b2ae6856389874f10e4cb5e55a12a7fdf8fb875f69fbc52a6256ac433c",
-    "alignstudio/matching.py": "07d0bde76dc005b08b320ae90a849279304565884396ff32986a0684e0188694",
-    "alignstudio/matching_legacy.py": "d387a695e71e337c0b07b0f51e80c2af58500fd95d3b3175d1119d00171a9d64",
-    "alignstudio/model.py": "78714e32360349823f2e034d400efa562561be47d387a1c2402dae06a56b47d3",
+    "alignstudio/dialog_helper.py": "a191b9242a27fc301f4e9ecfdd6dca49326c028ea088551ae42313a0b1fbe647",
+    "alignstudio/editing.py": "6b90048be63b46fcaf34bd1e86010d78f49647661e2b7994faf68808d1638117",
+    "alignstudio/exporter.py": "e0999020157b9a3bbd90bdf29247412a4e80c3f26f6dfb2ad2dd57e9ea7cec25",
+    "alignstudio/matching.py": "fecaaf21cf6128565f9ff96056f21a244fe1cde97d300b5b2da2aad1e39a9679",
+    "alignstudio/matching_legacy.py": "50e1ac5ef3ef8fa4b803dfe2d5140cad3447fcd851da883c0848457749898a2c",
+    "alignstudio/model.py": "03618efc9b5c048390aea3b59814f0e9203397e263431c606cec36515ce6bdb2",
     "alignstudio/mp4aac.py": "48eff19c755ee669487bb106048f73d19760e5205b55c7c86cf990c9008c4c29",
     "alignstudio/semantic_worker.py": "08f00453faab7d606a281a02e685d7c290cfa717dc133ae0df43336c0229b4b0",
-    "alignstudio/server.py": "2708d74dad20b021e173aa00e50b7d6a695b014e923ee1f13341b9316e24fb23",
-    "static/app.js": "1793ef09994e67a91e152fa0e8e561633f5ece8d9b295d4f197203e1c233297a",
-    "static/index.html": "6f84d357a2adf166ea72055870c2b06f1f1162e46a8105b4e7b63bdb04ab1b7f",
-    "static/styles.css": "70cd8f2acb61a0c8fa19417f367d61e1b6627b69dc6b7fb65fd407a7d76eb8d6"
+    "alignstudio/server.py": "4c41816c892a576d141a2da3393ff783257296138f1311c01eba6996681d925b",
+    "static/app.js": "51fbaa977a7f8a4f788d6b1f579a7687eca61f9b35c3df262b71275e67c957d1",
+    "static/index.html": "32da4913410f8999c8e3b6f9905d632021f8bf2f0f64ea97830f8b59225e3e01",
+    "static/styles.css": "5f536e4c26dfd576f11801c7c6d4098a80eafdf91b778b7242c3b2604c268862"
   },
-  "note": "Application and analysis engine bytes preserved; publication tools and documentation are packaged separately."
+  "note": "Validated 0.4.1 engine content preserved with LF line endings; semantic_worker.py bytes and implementation digest unchanged. Publication tools and documentation are maintained separately."
 }
