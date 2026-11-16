@@ -1,0 +1,10 @@
+# Optional analysis environment, tested on Windows x64 / Python 3.12.
+# The editor itself uses only the Python standard library.
+faster-whisper==1.2.1
+rapidocr==3.10.0
+onnxruntime==1.31.1
+Pillow==13.0.0
+numpy==2.5.4
+
+pypinyin==0.55.0
+tokenizers==0.23.3

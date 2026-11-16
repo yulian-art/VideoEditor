@@ -1,0 +1,5 @@
+﻿录音时间（成片）,原板书时间,内容,核对方式,至下一锚点的画面倍速,锚点ID,来源,锁定,置信度,记录类型,裁剪源起点,裁剪源终点,裁剪录音位置,裁剪数据JSON
+00:00:00.000,00:00:00.000,Synthetic start,人工,1.000,start,boundary,true,,anchor,,,,
+00:00:06.000,00:00:06.000,Manual control,人工,1.400,middle,manual,false,,anchor,,,,
+00:00:16.000,00:00:20.000,Hold this source frame,人工,0.000,freeze,manual,false,,anchor,,,,
+00:00:20.000,00:00:20.000,Synthetic end,人工,,end,boundary,true,,anchor,,,,

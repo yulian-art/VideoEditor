@@ -1,0 +1,7 @@
+﻿1
+00:00:04,000 --> 00:00:07,000
+Synthetic demo: captions use narration time.
+
+2
+00:00:12,000 --> 00:00:15,000
+Video speed changes; narration keeps its own clock.

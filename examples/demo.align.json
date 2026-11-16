@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "name": "合成演示：变速与定格",
+  "video_path": "generated/board.mp4",
+  "audio_path": "generated/narration.m4a",
+  "csv_path": "",
+  "captions_path": "",
+  "fps": 30,
+  "anchors": [
+    {
+      "id": "start",
+      "target": 0,
+      "source": 0,
+      "content": "Synthetic start",
+      "evidence": "人工",
+      "origin": "boundary",
+      "locked": true,
+      "confidence": null,
+      "match": {}
+    },
+    {
+      "id": "middle",
+      "target": 6,
+      "source": 6,
+      "content": "Manual control",
+      "evidence": "人工",
+      "origin": "manual",
+      "locked": false,
+      "confidence": null,
+      "match": {}
+    },
+    {
+      "id": "freeze",
+      "target": 16,
+      "source": 20,
+      "content": "Hold this source frame",
+      "evidence": "人工",
+      "origin": "manual",
+      "locked": false,
+      "confidence": null,
+      "match": {}
+    },
+    {
+      "id": "end",
+      "target": 20.0,
+      "source": 20,
+      "content": "Synthetic end",
+      "evidence": "人工",
+      "origin": "boundary",
+      "locked": true,
+      "confidence": null,
+      "match": {}
+    }
+  ],
+  "captions": [
+    {
+      "start": 4,
+      "end": 7,
+      "text": "Synthetic demo: captions use narration time."
+    },
+    {
+      "start": 12,
+      "end": 15,
+      "text": "Video speed changes; narration keeps its own clock."
+    }
+  ],
+  "editor": {},
+  "analysis": {},
+  "cuts": [],
+  "duration": 20.0,
+  "validation": [
+    {
+      "level": "info",
+      "index": 3,
+      "message": "第 3–4 个锚点构成 4.000 秒定格段"
+    }
+  ]
+}

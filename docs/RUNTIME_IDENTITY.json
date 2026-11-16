@@ -1,0 +1,23 @@
+{
+  "version": "0.4.1",
+  "files_sha256": {
+    "alignstudio/__init__.py": "d3be62cffc262561593a21dbba29cd332cf55891e8eeda7437cd7bb708f14244",
+    "alignstudio/alignment.py": "ac45279c86af8327dd50ae8e0dd9c9ff68dc7f063a2185c4b787553c94bc59f1",
+    "alignstudio/analysis_worker.py": "695c2131740e842f6fa69537a42b60d953cb6b5c868dfb493ef377abc8c4c071",
+    "alignstudio/analyzer.py": "43655adecc1f8bc5208453c77506040f996f0df93943f1660c7234c1d29f4466",
+    "alignstudio/asr_worker.py": "4618afb587177f1af0c86dd3f5ddb91794a2216c65a8a9b2d760027ad970caf9",
+    "alignstudio/dialog_helper.py": "e93558c413374b7dec019445f2fab6770dfa34f1c5590f255816699ed0025e09",
+    "alignstudio/editing.py": "a07da5ccca465900471671357c716e6e13cd3fc5d1fca239ee8ddde6940805ab",
+    "alignstudio/exporter.py": "ec2483b2ae6856389874f10e4cb5e55a12a7fdf8fb875f69fbc52a6256ac433c",
+    "alignstudio/matching.py": "07d0bde76dc005b08b320ae90a849279304565884396ff32986a0684e0188694",
+    "alignstudio/matching_legacy.py": "d387a695e71e337c0b07b0f51e80c2af58500fd95d3b3175d1119d00171a9d64",
+    "alignstudio/model.py": "78714e32360349823f2e034d400efa562561be47d387a1c2402dae06a56b47d3",
+    "alignstudio/mp4aac.py": "48eff19c755ee669487bb106048f73d19760e5205b55c7c86cf990c9008c4c29",
+    "alignstudio/semantic_worker.py": "08f00453faab7d606a281a02e685d7c290cfa717dc133ae0df43336c0229b4b0",
+    "alignstudio/server.py": "2708d74dad20b021e173aa00e50b7d6a695b014e923ee1f13341b9316e24fb23",
+    "static/app.js": "1793ef09994e67a91e152fa0e8e561633f5ece8d9b295d4f197203e1c233297a",
+    "static/index.html": "6f84d357a2adf166ea72055870c2b06f1f1162e46a8105b4e7b63bdb04ab1b7f",
+    "static/styles.css": "70cd8f2acb61a0c8fa19417f367d61e1b6627b69dc6b7fb65fd407a7d76eb8d6"
+  },
+  "note": "Application and analysis engine bytes preserved; publication tools and documentation are packaged separately."
+}

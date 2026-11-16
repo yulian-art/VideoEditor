@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>板书对齐工作台</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand-block">
+      <div class="brand-mark" aria-hidden="true">对</div>
+      <div>
+        <strong>板书对齐工作台</strong>
+        <span id="projectName">尚未导入项目</span>
+      </div>
+    </div>
+    <nav class="main-actions" aria-label="项目操作">
+      <button id="openProjectBtn" class="button secondary">打开项目</button>
+      <button id="importCsvBtn" class="button primary">导入 CSV</button>
+      <button id="saveProjectBtn" class="button secondary" disabled>保存项目</button>
+      <button id="exportBtn" class="button accent" disabled>导出成片</button>
+    </nav>
+    <div id="appStatus" class="status-chip" data-state="idle"><span class="status-dot"></span><span>就绪</span></div>
+  </header>
+
+  <main class="workspace">
+    <section class="editor-column" aria-label="播放器与时间轨">
+      <article class="card player-card">
+        <div class="card-heading">
+          <div>
+            <h1>映射预览</h1>
+            <p>录音是固定时基，板书画面按当前锚点映射播放。</p>
+          </div>
+          <div class="toolbar compact">
+            <button id="undoBtn" class="icon-button" title="撤销 (Ctrl+Z)" disabled>↶</button>
+            <button id="redoBtn" class="icon-button" title="重做 (Ctrl+Y)" disabled>↷</button>
+            <button id="shortcutsBtn" class="icon-button" title="快捷键">?</button>
+          </div>
+        </div>
+        <div class="video-stage" id="videoStage">
+          <video id="boardVideo" muted playsinline preload="metadata"></video>
+          <img id="framePreview" class="frame-preview" alt="FFmpeg 兼容板书预览" hidden>
+          <audio id="narrationAudio" preload="metadata"></audio>
+          <div id="emptyPlayer" class="empty-state">
+            <strong>选择素材后开始自动粗调，或导入 CSV</strong>
+            <span>录音固定为时间基准；自动候选可继续人工细调。</span>
+          </div>
+          <div id="captionOverlay" class="caption-overlay" aria-live="polite"></div>
+          <div id="proxyBadge" class="proxy-badge" hidden>逐帧预览</div>
+        </div>
+        <div id="inspectionPanel" class="inspection-panel" role="status" hidden>
+          <span id="inspectionStatus"></span>
+          <button id="returnMappingBtn" class="button secondary small">返回映射预览</button>
+        </div>
+        <div class="transport" aria-label="播放控制">
+          <button id="playBtn" class="round-button" aria-label="播放或暂停" disabled>▶</button>
+          <button id="stepBackBtn" class="icon-button" title="后退一帧" disabled>−1f</button>
+          <button id="stepForwardBtn" class="icon-button" title="前进一帧" disabled>+1f</button>
+          <div class="time-readout"><span id="currentTime">00:00:00.000</span><span>/</span><span id="durationTime">00:00:00.000</span></div>
+          <input id="scrubber" type="range" min="0" max="1" step="0.001" value="0" aria-label="录音播放头" disabled>
+          <button id="loopBtn" class="button secondary small" aria-pressed="false" disabled>局部循环</button>
+        </div>
+        <div class="pairing-strip">
+          <button id="markAudioBtn" class="marker-action audio" disabled><kbd>A</kbd><span>标记录音时刻</span></button>
+          <div class="marker-value"><span>录音标记</span><strong id="audioMarkerValue">—</strong></div>
+          <button id="pairBtn" class="pair-button" disabled><kbd>P</kbd><span>一键配对</span><small>自动吸附</small></button>
+          <div class="marker-value"><span>实际画面帧</span><strong id="boardMarkerValue">—</strong></div>
+          <button id="markBoardBtn" class="marker-action board" disabled><kbd>V</kbd><span>标记当前画面</span></button>
+        </div>
+      </article>
+
+      <article class="card timeline-card viz-root">
+        <div class="card-heading timeline-heading">
+          <div>
+            <h2>双轨时间线</h2>
+            <div class="legend" aria-label="轨道图例">
+              <span><i class="legend-line audio"></i>固定录音 / 字幕</span>
+              <span><i class="legend-line board"></i>可调板书 / 分段倍速</span>
+              <span><i class="legend-dot freeze"></i>定格段</span>
+            </div>
+          </div>
+          <div class="toolbar compact">
+            <button id="zoomOutBtn" class="icon-button" title="缩小">−</button>
+            <select id="zoomSelect" aria-label="时间线范围">
+              <option value="full">全片</option>
+              <option value="300">5 分钟</option>
+              <option value="120" selected>2 分钟</option>
+              <option value="30">30 秒</option>
+              <option value="10">10 秒</option>
+            </select>
+            <button id="zoomInBtn" class="icon-button" title="放大">＋</button>
+            <button id="centerPlayheadBtn" class="button secondary small">回到播放头</button>
+          </div>
+        </div>
+
+        <div class="timeline-shell" id="timelineShell">
+          <div class="time-axis" id="timeAxis" aria-hidden="true"></div>
+          <section class="track-row fixed-track" aria-label="固定录音轨">
+            <div class="track-label"><strong>固定轨</strong><span>录音 · 字幕</span></div>
+            <div class="track-content" id="audioTrack" tabindex="0">
+              <canvas id="waveformCanvas"></canvas>
+              <div id="captionBands" class="caption-bands"></div>
+              <div id="audioMarkerLine" class="marker-line audio" hidden><span>录音标记</span></div>
+              <div class="playhead-line" data-playhead></div>
+            </div>
+          </section>
+          <section class="track-row adjustable-track" aria-label="可调板书轨">
+            <div class="track-label"><strong>可调轨</strong><span>板书 · 倍速</span></div>
+            <div class="track-content" id="boardTrack" tabindex="0">
+              <canvas id="segmentCanvas"></canvas>
+              <div id="thumbnailStrip" class="thumbnail-strip" aria-hidden="true"></div>
+              <div id="anchorLayer" class="anchor-layer"></div>
+              <div id="boardMarkerLine" class="marker-line board" hidden><span>画面标记</span></div>
+              <div class="playhead-line" data-playhead></div>
+            </div>
+          </section>
+          <div id="timelineTooltip" class="timeline-tooltip" role="tooltip" hidden></div>
+        </div>
+        <div class="timeline-footer">
+          <span id="viewportLabel">范围：—</span>
+          <span>拖动菱形锚点只改变录音目标时间；<kbd>Alt</kbd> 暂停吸附。</span>
+        </div>
+      </article>
+    </section>
+
+    <aside class="side-column" aria-label="项目与对齐表">
+      <article class="card source-card">
+        <div class="card-heading">
+          <div><h2>项目素材</h2><p>路径只保存在本机项目文件中。</p></div>
+        </div>
+        <div class="path-grid">
+          <label for="videoPath">板书视频</label>
+          <div class="path-control"><input id="videoPath" type="text" placeholder="选择无声板书视频"><button data-browse="video">浏览</button></div>
+          <label for="audioPath">旁白录音</label>
+          <div class="path-control"><input id="audioPath" type="text" placeholder="选择 AAC/M4A 录音"><button data-browse="audio">浏览</button></div>
+          <label for="captionsPath">转写字幕</label>
+          <div class="path-control"><input id="captionsPath" type="text" placeholder="JSONL / JSON / SRT（可选）"><button data-browse="captions">浏览</button></div>
+          <label for="ffmpegPath">FFmpeg</label>
+          <div class="path-control"><input id="ffmpegPath" type="text" placeholder="自动检测或选择 ffmpeg.exe"><button data-browse="ffmpeg">浏览</button></div>
+        </div>
+        <button id="applySourcesBtn" class="button primary full" disabled>载入素材并生成波形</button>
+      </article>
+
+      <article class="card analysis-card">
+        <div class="card-heading"><div><h2>自动粗调</h2><p>支持仅凭录音与板书分析，也可复用现有缓存。</p></div></div>
+        <label>截图间隔（秒）<input id="sampleInterval" type="number" min="1" max="3600" value="60" step="1"></label>
+        <details><summary>本地分析设置与已有缓存</summary>
+          <label>转写缓存（可选 JSONL / JSON）<input id="analysisTranscript" type="text" placeholder="已有 narration.jsonl；留空则运行本地 ASR"></label>
+          <label>OCR 缓存（可选 JSONL / JSON）<div class="path-control"><input id="analysisOcr" type="text" placeholder="已有 board_ocr_60s.jsonl"><button data-analysis-browse="ocr">浏览</button></div></label>
+          <label>本地 Whisper 模型目录<div class="path-control"><input id="analysisModel" type="text" placeholder="本地 faster-whisper 模型"><button data-analysis-browse="model">浏览</button></div></label>
+          <label>本地语义模型目录<input id="analysisSemanticModel" type="text" placeholder="安装后自动使用 models/e5-small；留空可兼容旧词汇模式"></label>
+          <label>分析 Python（可选）<div class="path-control"><input id="analysisPython" type="text" placeholder="默认使用应用的 Python"><button data-analysis-browse="python">浏览</button></div></label>
+          <label>已有分析库目录（可选，以分号分隔）<input id="analysisPaths" type="text" placeholder="ocr-runtime;runtime"></label>
+          <label>OCR 裁边（左,上,右,下 像素）<input id="analysisCrop" type="text" value="0,0,0,0"></label>
+          <label>分析缓存目录（可选）<input id="analysisCacheDir" type="text" placeholder="默认保存在应用目录"></label>
+          <label>候选加密抽帧上限<input id="refineBudget" type="number" value="24" min="0" max="120"></label>
+          <label class="check-row"><input id="analysisCacheOnly" type="checkbox"><span>仅使用缓存（缺少数据时提示）</span></label>
+          <p class="muted">新分析需本地 faster-whisper、RapidOCR 与 ONNX Runtime。分析与媒体均留在本机；转写与 OCR 缓存应来自当前素材。</p>
+        </details>
+        <div class="toolbar"><button id="startAnalysisBtn" class="button primary">开始 / 重新粗调</button><button id="cancelAnalysisBtn" class="button danger" hidden>取消</button></div>
+        <progress id="analysisProgress" max="1" value="0" hidden></progress>
+        <p id="analysisMessage" class="muted" role="status">重跑保留人工与锁定锚点，只替换未锁定自动点。</p>
+        <p id="analysisSummary" class="muted"></p>
+        <details id="candidateDetails"><summary>匹配候选（可确认并锁定）</summary><ul id="candidateList" class="analysis-list"></ul></details>
+        <details open><summary id="reviewSummary">待核对区间</summary><ul id="reviewList" class="analysis-list"><li class="muted">分析完成后显示。</li></ul></details>
+      </article>
+
+      <article class="card cut-card">
+        <div class="card-heading"><div><h2>板书裁剪</h2><p>移除源画面区间，录音与字幕时间保持不变。</p></div></div>
+        <div class="path-grid">
+          <label for="cutSourceStart">源起点（秒）</label><div class="path-control"><input id="cutSourceStart" type="number" min="0" step="0.001"><button id="cutStartFrameBtn" type="button">当前帧</button></div>
+          <label for="cutSourceEnd">源终点（秒）</label><div class="path-control"><input id="cutSourceEnd" type="number" min="0" step="0.001"><button id="cutEndFrameBtn" type="button">当前帧</button></div>
+          <label for="cutTarget">录音跳变位置</label><input id="cutTarget" type="number" min="0" step="0.001" placeholder="留空自动定位；单位秒">
+        </div>
+        <label class="check-row cut-policy"><input id="cutSuspendManual" type="checkbox"><span>允许暂存被裁区间的人工点</span></label>
+        <p class="muted cut-policy">自动点会暂存；锁定点须先明确解锁。恢复裁剪会还原暂存点；冲突时保持当前项目。</p>
+        <button id="createCutBtn" class="button primary full" disabled>提交板书裁剪</button>
+        <ul id="cutList" class="analysis-list cut-policy"></ul>
+      </article>
+
+      <article class="card inspector-card">
+        <div class="card-heading">
+          <div><h2>当前锚点</h2><p id="selectedAnchorId">未选择</p></div>
+          <button id="deleteAnchorBtn" class="button danger small" disabled>删除</button>
+        </div>
+        <fieldset id="anchorInspector" disabled>
+          <div class="field-row two">
+            <label>录音目标时间<input id="anchorTarget" type="number" min="0" step="0.001"></label>
+            <label>原板书时间<input id="anchorSource" type="number" min="0" step="0.001"></label>
+          </div>
+          <label>内容说明<input id="anchorContent" type="text"></label>
+          <div class="field-row two">
+            <label>来源
+              <select id="anchorOrigin"><option value="manual">人工</option><option value="auto">自动候选</option><option value="csv">CSV</option><option value="boundary">边界</option></select>
+            </label>
+            <label>核对方式<input id="anchorEvidence" type="text"></label>
+          </div>
+          <label class="check-row"><input id="anchorLocked" type="checkbox"><span>锁定人工锚点</span></label>
+          <div id="speedSummary" class="speed-summary"><span>左侧 —</span><span>右侧 —</span></div>
+          <button id="applyAnchorBtn" class="button primary full">应用数值微调</button>
+        </fieldset>
+      </article>
+
+      <article class="card validation-card">
+        <div class="card-heading">
+          <div><h2>映射检查</h2><p>提交修改前即时校验。</p></div>
+          <span id="validationCount" class="count-badge">0</span>
+        </div>
+        <ul id="validationList" class="validation-list"><li class="muted">导入 CSV 后显示检查结果。</li></ul>
+      </article>
+
+      <article class="card table-card">
+        <div class="card-heading">
+          <div><h2>对齐表</h2><p id="anchorCount">0 个锚点</p></div>
+          <button id="exportCsvBtn" class="button secondary small" disabled>另存 CSV</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>录音时间</th><th>原板书</th><th>内容 / 状态</th><th>倍速</th></tr></thead>
+            <tbody id="anchorTable"><tr><td colspan="5" class="empty-cell">尚无数据</td></tr></tbody>
+          </table>
+        </div>
+      </article>
+    </aside>
+  </main>
+
+  <dialog id="exportDialog">
+    <form method="dialog" class="dialog-card">
+      <div class="dialog-heading"><div><h2>导出对齐成片</h2><p>视频重新计时，旁白 AAC 流逐包复制，不转码。</p></div><button class="icon-button" value="cancel" aria-label="关闭">×</button></div>
+      <label>输出 MP4
+        <div class="path-control"><input id="outputPath" type="text" placeholder="选择输出位置"><button id="browseOutputBtn" type="button">浏览</button></div>
+      </label>
+      <label>视频编码器
+        <select id="encoderSelect"><option value="libx264">libx264（兼容，CPU）</option><option value="h264_nvenc">h264_nvenc（NVIDIA）</option></select>
+      </label>
+      <div id="exportProgressPanel" class="progress-panel" hidden>
+        <div class="progress-copy"><strong id="exportState">准备</strong><span id="exportPercent">0%</span></div>
+        <progress id="exportProgress" max="1" value="0"></progress>
+        <p id="exportMessage"></p>
+      </div>
+      <div class="dialog-actions"><button value="cancel" class="button secondary">关闭</button><button id="cancelExportBtn" type="button" class="button danger" hidden>取消任务</button><button id="startExportBtn" type="button" class="button accent">开始导出</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="shortcutsDialog">
+    <form method="dialog" class="dialog-card shortcuts-card">
+      <div class="dialog-heading"><div><h2>键盘快捷键</h2><p>输入框获得焦点时不会触发编辑快捷键。</p></div><button class="icon-button" value="cancel" aria-label="关闭">×</button></div>
+      <dl class="shortcut-list">
+        <div><dt><kbd>Space</kbd></dt><dd>播放 / 暂停</dd></div>
+        <div><dt><kbd>A</kbd></dt><dd>标记当前录音时刻</dd></div>
+        <div><dt><kbd>V</kbd></dt><dd>标记实际显示的源画面帧</dd></div>
+        <div><dt><kbd>P</kbd></dt><dd>将画面标记配对到录音标记</dd></div>
+        <div><dt><kbd>L</kbd></dt><dd>切换选中锚点附近的局部循环</dd></div>
+        <div><dt><kbd>← / →</kbd></dt><dd>前后移动一帧（Shift 为 1 秒）</dd></div>
+        <div><dt><kbd>Ctrl+Z / Ctrl+Y</kbd></dt><dd>撤销 / 重做</dd></div>
+        <div><dt><kbd>Alt</kbd> + 拖动</dt><dd>临时关闭吸附</dd></div>
+      </dl>
+      <div class="dialog-actions"><button value="cancel" class="button primary">知道了</button></div>
+    </form>
+  </dialog>
+
+  <div id="toastRegion" class="toast-region" aria-live="polite" aria-atomic="true"></div>
+  <script src="/app.js" defer></script>
+</body>
+</html>

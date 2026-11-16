@@ -1,0 +1,9 @@
+[project]
+name = "board-align-studio"
+version = "0.4.1"
+description = "CSV-driven local editor for aligning silent board video to fixed narration audio"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.unittest]
+start-directory = "tests"
